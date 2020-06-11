@@ -1,0 +1,490 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  ignorenonframetext,
+]{beamer}
+\usepackage{pgfpages}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+\setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{part title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{part title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+}
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={R Utilities Functions},
+  pdfauthor={Akil Elkamel},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\newif\ifbibliography
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{R Utilities Functions}
+\author{Akil Elkamel}
+\date{6/11/2020}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}[fragile]{pivot\_longer() - Definition}
+\protect\hypertarget{pivot_longer---definition}{}
+
+The pivot\_longer() function from the tidyr package, ``lengthens'' data,
+increasing the number of rows and decreasing the number of columns. The
+inverse transformation is pivot\_wider()
+
+\textbf{Usage:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pivot_longer}\NormalTok{(}
+\NormalTok{  data,}
+\NormalTok{  cols,}
+  \DataTypeTok{names_to =} \StringTok{"name"}\NormalTok{,}
+  \DataTypeTok{names_prefix =} \OtherTok{NULL}\NormalTok{,}
+  \DataTypeTok{names_sep =} \OtherTok{NULL}\NormalTok{,}
+  \DataTypeTok{names_pattern =} \OtherTok{NULL}\NormalTok{,}
+  \DataTypeTok{names_ptypes =} \KeywordTok{list}\NormalTok{(),}
+  \DataTypeTok{names_transform =} \KeywordTok{list}\NormalTok{(),}
+  \DataTypeTok{names_repair =} \StringTok{"check_unique"}\NormalTok{,}
+  \DataTypeTok{values_to =} \StringTok{"value"}\NormalTok{,}
+  \DataTypeTok{values_drop_na =} \OtherTok{FALSE}\NormalTok{,}
+  \DataTypeTok{values_ptypes =} \KeywordTok{list}\NormalTok{(),}
+  \DataTypeTok{values_transform =} \KeywordTok{list}\NormalTok{(),}
+\NormalTok{  ...}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 1}
+\protect\hypertarget{pivot_longer---example-1}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Simplest case where column names are character data}
+\NormalTok{relig_income}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 18 x 11
+##    religion `<$10k` `$10-20k` `$20-30k` `$30-40k` `$40-50k` `$50-75k` `$75-100k`
+##    <chr>      <dbl>     <dbl>     <dbl>     <dbl>     <dbl>     <dbl>      <dbl>
+##  1 Agnostic      27        34        60        81        76       137        122
+##  2 Atheist       12        27        37        52        35        70         73
+##  3 Buddhist      27        21        30        34        33        58         62
+##  4 Catholic     418       617       732       670       638      1116        949
+##  5 Don’t k~      15        14        15        11        10        35         21
+##  6 Evangel~     575       869      1064       982       881      1486        949
+##  7 Hindu          1         9         7         9        11        34         47
+##  8 Histori~     228       244       236       238       197       223        131
+##  9 Jehovah~      20        27        24        24        21        30         15
+## 10 Jewish        19        19        25        25        30        95         69
+## 11 Mainlin~     289       495       619       655       651      1107        939
+## 12 Mormon        29        40        48        51        56       112         85
+## 13 Muslim         6         7         9        10         9        23         16
+## 14 Orthodox      13        17        23        32        32        47         38
+## 15 Other C~       9         7        11        13        13        14         18
+## 16 Other F~      20        33        40        46        49        63         46
+## 17 Other W~       5         2         3         4         2         7          3
+## 18 Unaffil~     217       299       374       365       341       528        407
+## # ... with 3 more variables: `$100-150k` <dbl>, `>150k` <dbl>, `Don't
+## #   know/refused` <dbl>
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 1}
+\protect\hypertarget{pivot_longer---example-1-1}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{relig_income }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{pivot_longer}\NormalTok{(}\OperatorTok{-}\NormalTok{religion, }\DataTypeTok{names_to =} \StringTok{"income"}\NormalTok{, }\DataTypeTok{values_to =} \StringTok{"count"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 180 x 3
+##    religion income             count
+##    <chr>    <chr>              <dbl>
+##  1 Agnostic <$10k                 27
+##  2 Agnostic $10-20k               34
+##  3 Agnostic $20-30k               60
+##  4 Agnostic $30-40k               81
+##  5 Agnostic $40-50k               76
+##  6 Agnostic $50-75k              137
+##  7 Agnostic $75-100k             122
+##  8 Agnostic $100-150k            109
+##  9 Agnostic >150k                 84
+## 10 Agnostic Don't know/refused    96
+## # ... with 170 more rows
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 2}
+\protect\hypertarget{pivot_longer---example-2}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Slightly more complex case where columns have common prefix,}
+\CommentTok{# and missing missings are structural so should be dropped.}
+\NormalTok{billboard}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 317 x 79
+##    artist track date.entered   wk1   wk2   wk3   wk4   wk5   wk6   wk7   wk8
+##    <chr>  <chr> <date>       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+##  1 2 Pac  Baby~ 2000-02-26      87    82    72    77    87    94    99    NA
+##  2 2Ge+h~ The ~ 2000-09-02      91    87    92    NA    NA    NA    NA    NA
+##  3 3 Doo~ Kryp~ 2000-04-08      81    70    68    67    66    57    54    53
+##  4 3 Doo~ Loser 2000-10-21      76    76    72    69    67    65    55    59
+##  5 504 B~ Wobb~ 2000-04-15      57    34    25    17    17    31    36    49
+##  6 98^0   Give~ 2000-08-19      51    39    34    26    26    19     2     2
+##  7 A*Tee~ Danc~ 2000-07-08      97    97    96    95   100    NA    NA    NA
+##  8 Aaliy~ I Do~ 2000-01-29      84    62    51    41    38    35    35    38
+##  9 Aaliy~ Try ~ 2000-03-18      59    53    38    28    21    18    16    14
+## 10 Adams~ Open~ 2000-08-26      76    76    74    69    68    67    61    58
+## # ... with 307 more rows, and 68 more variables: wk9 <dbl>, wk10 <dbl>,
+## #   wk11 <dbl>, wk12 <dbl>, wk13 <dbl>, wk14 <dbl>, wk15 <dbl>, wk16 <dbl>,
+## #   wk17 <dbl>, wk18 <dbl>, wk19 <dbl>, wk20 <dbl>, wk21 <dbl>, wk22 <dbl>,
+## #   wk23 <dbl>, wk24 <dbl>, wk25 <dbl>, wk26 <dbl>, wk27 <dbl>, wk28 <dbl>,
+## #   wk29 <dbl>, wk30 <dbl>, wk31 <dbl>, wk32 <dbl>, wk33 <dbl>, wk34 <dbl>,
+## #   wk35 <dbl>, wk36 <dbl>, wk37 <dbl>, wk38 <dbl>, wk39 <dbl>, wk40 <dbl>,
+## #   wk41 <dbl>, wk42 <dbl>, wk43 <dbl>, wk44 <dbl>, wk45 <dbl>, wk46 <dbl>,
+## #   wk47 <dbl>, wk48 <dbl>, wk49 <dbl>, wk50 <dbl>, wk51 <dbl>, wk52 <dbl>,
+## #   wk53 <dbl>, wk54 <dbl>, wk55 <dbl>, wk56 <dbl>, wk57 <dbl>, wk58 <dbl>,
+## #   wk59 <dbl>, wk60 <dbl>, wk61 <dbl>, wk62 <dbl>, wk63 <dbl>, wk64 <dbl>,
+## #   wk65 <dbl>, wk66 <lgl>, wk67 <lgl>, wk68 <lgl>, wk69 <lgl>, wk70 <lgl>,
+## #   wk71 <lgl>, wk72 <lgl>, wk73 <lgl>, wk74 <lgl>, wk75 <lgl>, wk76 <lgl>
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 2}
+\protect\hypertarget{pivot_longer---example-2-1}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Slightly more complex case where columns have common prefix,}
+\CommentTok{# and missing missings are structural so should be dropped.}
+\NormalTok{billboard}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 317 x 79
+##    artist track date.entered   wk1   wk2   wk3   wk4   wk5   wk6   wk7   wk8
+##    <chr>  <chr> <date>       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+##  1 2 Pac  Baby~ 2000-02-26      87    82    72    77    87    94    99    NA
+##  2 2Ge+h~ The ~ 2000-09-02      91    87    92    NA    NA    NA    NA    NA
+##  3 3 Doo~ Kryp~ 2000-04-08      81    70    68    67    66    57    54    53
+##  4 3 Doo~ Loser 2000-10-21      76    76    72    69    67    65    55    59
+##  5 504 B~ Wobb~ 2000-04-15      57    34    25    17    17    31    36    49
+##  6 98^0   Give~ 2000-08-19      51    39    34    26    26    19     2     2
+##  7 A*Tee~ Danc~ 2000-07-08      97    97    96    95   100    NA    NA    NA
+##  8 Aaliy~ I Do~ 2000-01-29      84    62    51    41    38    35    35    38
+##  9 Aaliy~ Try ~ 2000-03-18      59    53    38    28    21    18    16    14
+## 10 Adams~ Open~ 2000-08-26      76    76    74    69    68    67    61    58
+## # ... with 307 more rows, and 68 more variables: wk9 <dbl>, wk10 <dbl>,
+## #   wk11 <dbl>, wk12 <dbl>, wk13 <dbl>, wk14 <dbl>, wk15 <dbl>, wk16 <dbl>,
+## #   wk17 <dbl>, wk18 <dbl>, wk19 <dbl>, wk20 <dbl>, wk21 <dbl>, wk22 <dbl>,
+## #   wk23 <dbl>, wk24 <dbl>, wk25 <dbl>, wk26 <dbl>, wk27 <dbl>, wk28 <dbl>,
+## #   wk29 <dbl>, wk30 <dbl>, wk31 <dbl>, wk32 <dbl>, wk33 <dbl>, wk34 <dbl>,
+## #   wk35 <dbl>, wk36 <dbl>, wk37 <dbl>, wk38 <dbl>, wk39 <dbl>, wk40 <dbl>,
+## #   wk41 <dbl>, wk42 <dbl>, wk43 <dbl>, wk44 <dbl>, wk45 <dbl>, wk46 <dbl>,
+## #   wk47 <dbl>, wk48 <dbl>, wk49 <dbl>, wk50 <dbl>, wk51 <dbl>, wk52 <dbl>,
+## #   wk53 <dbl>, wk54 <dbl>, wk55 <dbl>, wk56 <dbl>, wk57 <dbl>, wk58 <dbl>,
+## #   wk59 <dbl>, wk60 <dbl>, wk61 <dbl>, wk62 <dbl>, wk63 <dbl>, wk64 <dbl>,
+## #   wk65 <dbl>, wk66 <lgl>, wk67 <lgl>, wk68 <lgl>, wk69 <lgl>, wk70 <lgl>,
+## #   wk71 <lgl>, wk72 <lgl>, wk73 <lgl>, wk74 <lgl>, wk75 <lgl>, wk76 <lgl>
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 2}
+\protect\hypertarget{pivot_longer---example-2-2}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{billboard }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{pivot_longer}\NormalTok{(}
+   \DataTypeTok{cols =} \KeywordTok{starts_with}\NormalTok{(}\StringTok{"wk"}\NormalTok{),}
+   \DataTypeTok{names_to =} \StringTok{"week"}\NormalTok{,}
+   \DataTypeTok{names_prefix =} \StringTok{"wk"}\NormalTok{,}
+   \DataTypeTok{values_to =} \StringTok{"rank"}\NormalTok{,}
+   \DataTypeTok{values_drop_na =} \OtherTok{TRUE}
+\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5,307 x 5
+##    artist  track                   date.entered week   rank
+##    <chr>   <chr>                   <date>       <chr> <dbl>
+##  1 2 Pac   Baby Don't Cry (Keep... 2000-02-26   1        87
+##  2 2 Pac   Baby Don't Cry (Keep... 2000-02-26   2        82
+##  3 2 Pac   Baby Don't Cry (Keep... 2000-02-26   3        72
+##  4 2 Pac   Baby Don't Cry (Keep... 2000-02-26   4        77
+##  5 2 Pac   Baby Don't Cry (Keep... 2000-02-26   5        87
+##  6 2 Pac   Baby Don't Cry (Keep... 2000-02-26   6        94
+##  7 2 Pac   Baby Don't Cry (Keep... 2000-02-26   7        99
+##  8 2Ge+her The Hardest Part Of ... 2000-09-02   1        91
+##  9 2Ge+her The Hardest Part Of ... 2000-09-02   2        87
+## 10 2Ge+her The Hardest Part Of ... 2000-09-02   3        92
+## # ... with 5,297 more rows
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 3}
+\protect\hypertarget{pivot_longer---example-3}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Multiple variables stored in column names}
+\NormalTok{who}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 7,240 x 60
+##    country iso2  iso3   year new_sp_m014 new_sp_m1524 new_sp_m2534 new_sp_m3544
+##    <chr>   <chr> <chr> <int>       <int>        <int>        <int>        <int>
+##  1 Afghan~ AF    AFG    1980          NA           NA           NA           NA
+##  2 Afghan~ AF    AFG    1981          NA           NA           NA           NA
+##  3 Afghan~ AF    AFG    1982          NA           NA           NA           NA
+##  4 Afghan~ AF    AFG    1983          NA           NA           NA           NA
+##  5 Afghan~ AF    AFG    1984          NA           NA           NA           NA
+##  6 Afghan~ AF    AFG    1985          NA           NA           NA           NA
+##  7 Afghan~ AF    AFG    1986          NA           NA           NA           NA
+##  8 Afghan~ AF    AFG    1987          NA           NA           NA           NA
+##  9 Afghan~ AF    AFG    1988          NA           NA           NA           NA
+## 10 Afghan~ AF    AFG    1989          NA           NA           NA           NA
+## # ... with 7,230 more rows, and 52 more variables: new_sp_m4554 <int>,
+## #   new_sp_m5564 <int>, new_sp_m65 <int>, new_sp_f014 <int>,
+## #   new_sp_f1524 <int>, new_sp_f2534 <int>, new_sp_f3544 <int>,
+## #   new_sp_f4554 <int>, new_sp_f5564 <int>, new_sp_f65 <int>,
+## #   new_sn_m014 <int>, new_sn_m1524 <int>, new_sn_m2534 <int>,
+## #   new_sn_m3544 <int>, new_sn_m4554 <int>, new_sn_m5564 <int>,
+## #   new_sn_m65 <int>, new_sn_f014 <int>, new_sn_f1524 <int>,
+## #   new_sn_f2534 <int>, new_sn_f3544 <int>, new_sn_f4554 <int>,
+## #   new_sn_f5564 <int>, new_sn_f65 <int>, new_ep_m014 <int>,
+## #   new_ep_m1524 <int>, new_ep_m2534 <int>, new_ep_m3544 <int>,
+## #   new_ep_m4554 <int>, new_ep_m5564 <int>, new_ep_m65 <int>,
+## #   new_ep_f014 <int>, new_ep_f1524 <int>, new_ep_f2534 <int>,
+## #   new_ep_f3544 <int>, new_ep_f4554 <int>, new_ep_f5564 <int>,
+## #   new_ep_f65 <int>, newrel_m014 <int>, newrel_m1524 <int>,
+## #   newrel_m2534 <int>, newrel_m3544 <int>, newrel_m4554 <int>,
+## #   newrel_m5564 <int>, newrel_m65 <int>, newrel_f014 <int>,
+## #   newrel_f1524 <int>, newrel_f2534 <int>, newrel_f3544 <int>,
+## #   newrel_f4554 <int>, newrel_f5564 <int>, newrel_f65 <int>
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 3}
+\protect\hypertarget{pivot_longer---example-3-1}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{who }\OperatorTok{%>%}\StringTok{ }\KeywordTok{pivot_longer}\NormalTok{(}
+  \DataTypeTok{cols =}\NormalTok{ new_sp_m014}\OperatorTok{:}\NormalTok{newrel_f65,}
+  \DataTypeTok{names_to =} \KeywordTok{c}\NormalTok{(}\StringTok{"diagnosis"}\NormalTok{, }\StringTok{"gender"}\NormalTok{, }\StringTok{"age"}\NormalTok{),}
+  \DataTypeTok{names_pattern =} \StringTok{"new_?(.*)_(.)(.*)"}\NormalTok{,}
+  \DataTypeTok{values_to =} \StringTok{"count"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 405,440 x 8
+##    country     iso2  iso3   year diagnosis gender age   count
+##    <chr>       <chr> <chr> <int> <chr>     <chr>  <chr> <int>
+##  1 Afghanistan AF    AFG    1980 sp        m      014      NA
+##  2 Afghanistan AF    AFG    1980 sp        m      1524     NA
+##  3 Afghanistan AF    AFG    1980 sp        m      2534     NA
+##  4 Afghanistan AF    AFG    1980 sp        m      3544     NA
+##  5 Afghanistan AF    AFG    1980 sp        m      4554     NA
+##  6 Afghanistan AF    AFG    1980 sp        m      5564     NA
+##  7 Afghanistan AF    AFG    1980 sp        m      65       NA
+##  8 Afghanistan AF    AFG    1980 sp        f      014      NA
+##  9 Afghanistan AF    AFG    1980 sp        f      1524     NA
+## 10 Afghanistan AF    AFG    1980 sp        f      2534     NA
+## # ... with 405,430 more rows
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 4}
+\protect\hypertarget{pivot_longer---example-4}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Multiple observations per row}
+\NormalTok{anscombe}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    x1 x2 x3 x4    y1   y2    y3    y4
+## 1  10 10 10  8  8.04 9.14  7.46  6.58
+## 2   8  8  8  8  6.95 8.14  6.77  5.76
+## 3  13 13 13  8  7.58 8.74 12.74  7.71
+## 4   9  9  9  8  8.81 8.77  7.11  8.84
+## 5  11 11 11  8  8.33 9.26  7.81  8.47
+## 6  14 14 14  8  9.96 8.10  8.84  7.04
+## 7   6  6  6  8  7.24 6.13  6.08  5.25
+## 8   4  4  4 19  4.26 3.10  5.39 12.50
+## 9  12 12 12  8 10.84 9.13  8.15  5.56
+## 10  7  7  7  8  4.82 7.26  6.42  7.91
+## 11  5  5  5  8  5.68 4.74  5.73  6.89
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{pivot\_longer() - Example 4}
+\protect\hypertarget{pivot_longer---example-4-1}{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{anscombe }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{pivot_longer}\NormalTok{(}\KeywordTok{everything}\NormalTok{(),}
+   \DataTypeTok{names_to =} \KeywordTok{c}\NormalTok{(}\StringTok{".value"}\NormalTok{, }\StringTok{"set"}\NormalTok{),}
+   \DataTypeTok{names_pattern =} \StringTok{"(.)(.)"}
+\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 44 x 3
+##    set       x     y
+##    <chr> <dbl> <dbl>
+##  1 1        10  8.04
+##  2 2        10  9.14
+##  3 3        10  7.46
+##  4 4         8  6.58
+##  5 1         8  6.95
+##  6 2         8  8.14
+##  7 3         8  6.77
+##  8 4         8  5.76
+##  9 1        13  7.58
+## 10 2        13  8.74
+## # ... with 34 more rows
+\end{verbatim}
+
+\end{frame}
+
+\end{document}

@@ -1,0 +1,123 @@
+---
+title: "R Utilities Functions"
+author: "Akil Elkamel"
+date: "6/11/2020"
+output:
+  beamer_presentation: default
+  slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set()
+```
+
+## pivot_longer() - Definition
+
+The pivot_longer() function from the tidyr package, "lengthens" data, increasing the number of rows and decreasing the number of columns. The inverse transformation is pivot_wider()
+
+**Usage:**
+
+```{r eval=FALSE}
+pivot_longer(
+  data,
+  cols,
+  names_to = "name",
+  names_prefix = NULL,
+  names_sep = NULL,
+  names_pattern = NULL,
+  names_ptypes = list(),
+  names_transform = list(),
+  names_repair = "check_unique",
+  values_to = "value",
+  values_drop_na = FALSE,
+  values_ptypes = list(),
+  values_transform = list(),
+  ...
+)
+```
+
+
+## pivot_longer() - Example 1
+```{r echo=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+
+```{r message=FALSE}
+# Simplest case where column names are character data
+relig_income
+```
+
+
+## pivot_longer() - Example 1
+
+```{r message=FALSE}
+relig_income %>%
+  pivot_longer(-religion, names_to = "income", values_to = "count")
+```
+
+## pivot_longer() - Example 2
+
+```{r}
+# Slightly more complex case where columns have common prefix,
+# and missing missings are structural so should be dropped.
+billboard
+```
+
+## pivot_longer() - Example 2
+
+```{r}
+# Slightly more complex case where columns have common prefix,
+# and missing missings are structural so should be dropped.
+billboard
+```
+
+## pivot_longer() - Example 2
+
+```{r}
+billboard %>%
+ pivot_longer(
+   cols = starts_with("wk"),
+   names_to = "week",
+   names_prefix = "wk",
+   values_to = "rank",
+   values_drop_na = TRUE
+ )
+```
+
+
+## pivot_longer() - Example 3
+
+```{r}
+# Multiple variables stored in column names
+who
+```
+
+## pivot_longer() - Example 3
+
+```{r}
+who %>% pivot_longer(
+  cols = new_sp_m014:newrel_f65,
+  names_to = c("diagnosis", "gender", "age"),
+  names_pattern = "new_?(.*)_(.)(.*)",
+  values_to = "count"
+)
+```
+
+
+## pivot_longer() - Example 4
+
+```{r}
+# Multiple observations per row
+anscombe
+```
+
+## pivot_longer() - Example 4
+
+```{r}
+anscombe %>%
+ pivot_longer(everything(),
+   names_to = c(".value", "set"),
+   names_pattern = "(.)(.)"
+ )
+```
