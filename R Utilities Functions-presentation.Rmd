@@ -1,0 +1,370 @@
+---
+title: "Data Science, Artificial Intelligence, Machine Learning and Deep Learning:"
+subtitle: "Tips and tricks with R and Python"
+author: "Akil Elkamel"
+date: "6/11/2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set()
+```
+
+## pivot_longer() - Definition
+
+The pivot_longer() function from the tidyr package, "lengthens" data, increasing the number of rows and decreasing the number of columns. The inverse transformation is pivot_wider()
+
+**Usage:**
+
+```{r eval=FALSE}
+pivot_longer(
+  data,
+  cols,
+  names_to = "name",
+  names_prefix = NULL,
+  names_sep = NULL,
+  names_pattern = NULL,
+  names_ptypes = list(),
+  names_transform = list(),
+  names_repair = "check_unique",
+  values_to = "value",
+  values_drop_na = FALSE,
+  values_ptypes = list(),
+  values_transform = list(),
+  ...
+)
+```
+
+
+## pivot_longer() - Example 1
+```{r echo=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+
+```{r message=FALSE}
+# Simplest case where column names are character data
+relig_income
+```
+
+
+## pivot_longer() - Example 1
+
+```{r message=FALSE}
+relig_income %>%
+  pivot_longer(-religion, names_to = "income", values_to = "count")
+```
+
+## pivot_longer() - Example 2
+
+```{r}
+# Slightly more complex case where columns have common prefix,
+# and missing missings are structural so should be dropped.
+billboard
+```
+
+## pivot_longer() - Example 2
+
+```{r}
+# Slightly more complex case where columns have common prefix,
+# and missing missings are structural so should be dropped.
+billboard
+```
+
+## pivot_longer() - Example 2
+
+```{r}
+billboard %>%
+ pivot_longer(
+   cols = starts_with("wk"),
+   names_to = "week",
+   names_prefix = "wk",
+   values_to = "rank",
+   values_drop_na = TRUE
+ )
+```
+
+
+## pivot_longer() - Example 3
+
+```{r}
+# Multiple variables stored in column names
+who
+```
+
+## pivot_longer() - Example 3
+
+```{r}
+who %>% pivot_longer(
+  cols = new_sp_m014:newrel_f65,
+  names_to = c("diagnosis", "gender", "age"),
+  names_pattern = "new_?(.*)_(.)(.*)",
+  values_to = "count"
+)
+```
+
+
+## pivot_longer() - Example 4
+
+```{r}
+# Multiple observations per row
+anscombe
+```
+
+## pivot_longer() - Example 4
+
+```{r}
+anscombe %>%
+ pivot_longer(everything(),
+   names_to = c(".value", "set"),
+   names_pattern = "(.)(.)"
+ )
+```
+
+
+
+## accumulate()
+
+Accumulate allows you to incrementally build something. One example is that we could use accumulate() to return cumulative sums. After we do a simple summation example we'll use the accumulate function to build multiple models and to give us the AIC for each of those models.
+
+Accumulate is a function in the purrr library, so we'd start by calling the purrr and dplyr libraries.  We'll also call in the tibble library because we'll use the enframe function from the tibble package for our model building example.
+
+```{r}
+library(purrr)
+1:5 %>% 
+  accumulate(function(x, y) x + y)
+```
+
+## accumulate()
+
+```{r}
+library(purrr)
+library(tibble)
+income <- read.csv("data/Income_7.csv")
+models <- c("grouped_marital", "grouped_gov_work", "grouped_education", "gender") %>% 
+  accumulate(function(x, y) paste(x, y, sep = " + "), .init = "income_recoded ~ age") %>% 
+  set_names(1:length(.))
+enframe(models, name = "model", value = "spec")
+```
+
+## accumulate()
+
+```{r}
+models %>% 
+  map(glm, data = income) %>% 
+  map(summary) %>% 
+  map_dbl('aic') %>% 
+  enframe(name = "model", value = "AIC")
+```
+
+
+## Train test split (R) - method 1
+
+We will split the **mpg** dataset into a training set mpg_train (75% of the data) and a test set mpg_test (25% of the data). One way to do this is to generate a column of uniform random numbers between 0 and 1, using the function runif().
+
+If we have a data set dframe of size $N$, and we want a random subset of approximately size $100∗X%$ of $N$ (where $X$ is between 0 and 1), then:
+
+1. Generate a vector of uniform random numbers: gp = runif(N).
+2. dframe[gp < X,] will be about the right size.
+3. dframe[gp >= X,] will be the complement.
+
+## Train test split (R) - method 1
+```{r}
+# Use nrow to get the number of rows in mpg (N) and print it
+(N <- nrow(mpg))
+# Calculate how many rows 75% of N should be and print it
+# Hint: use round() to get an integer
+(target <- round(.75 * N))
+# Create the vector of N uniform random variables: gp
+gp <- runif(N)
+
+# Use gp to create the training set: mpg_train (75% of data) and mpg_test (25% of data)
+mpg_train <- mpg[gp < .75, ]
+mpg_test <- mpg[gp >= .75, ]
+
+# Use nrow() to examine mpg_train and mpg_test
+nrow(mpg_train)
+nrow(mpg_test)
+```
+
+## Train test split (R) - method 2
+
+```{r}
+library(dataPreparation)
+data("adult")
+head(adult)
+# Random sample indexes
+train_index <- sample(1:nrow(adult), 0.8 * nrow(adult))
+test_index <- setdiff(1:nrow(adult), train_index)
+
+# Build X_train, y_train, X_test, y_test
+X_train <- adult[train_index, -15]
+y_train <- adult[train_index, "income"]
+
+X_test <- adult[test_index, -15]
+y_test <- adult[test_index, "income"]
+
+dim(X_train)
+length(y_train)
+dim(X_test)
+length(y_test)
+```
+
+
+## Train test split (Python)
+
+```{r include=FALSE}
+library(reticulate)
+#conda_list()
+use_condaenv("py3.6", required = TRUE)
+```
+
+
+```{python}
+from sklearn.model_selection import train_test_split
+import numpy as np
+X, y = np.arange(16).reshape((8, 2)), range(8)
+X
+y
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+X_train
+X_test
+y_train
+y_test
+train_test_split(y, shuffle=False)
+```
+
+
+
+
+## Cross validation (R)
+
+There are several ways to implement an n-fold cross validation plan. In this example we will create such a plan using vtreat::kWayCrossValidation().
+
+kWayCrossValidation() creates a cross validation plan with the following call:
+
+```{r eval=FALSE}
+splitPlan <- kWayCrossValidation(nRows, nSplits, dframe, y)
+```
+
+where $nRows$ is the number of rows of data to be split, and $nSplits$ is the desired number of cross-validation folds.
+
+*dframe and y aren’t used by kWayCrossValidation; they are there for compatibility with other vtreat data partitioning functions. We can set them both to NULL.*
+
+The resulting splitPlan is a list of nSplits elements; each element contains two vectors:
+
+ * train: the indices of dframe that will form the training set
+ * app: the indices of dframe that will form the test (or application) set In this exercise you will create a 3-fold cross-validation plan for the data set mpg.
+
+
+## Cross validation (R)
+
+```{r}
+# Load the package vtreat
+library(vtreat)
+# Get the number of rows in mpg
+nRows <- nrow(mpg)
+
+# Implement the 3-fold cross-fold plan with vtreat
+splitPlan <- kWayCrossValidation(nRows, 3, NULL, NULL)
+
+# Examine the split plan
+str(splitPlan)
+```
+
+## Cross validation (R)
+
+**Evaluate a modeling procedure using n-fold cross-validation**
+
+We will use splitPlan, the 3-fold cross validation plan from the previous exercise, to make predictions from a model that predicts mpg$cty from mpg$hwy.
+
+If dframe is the training data, then one way to add a column of cross-validation predictions to the frame is as follows:
+
+```{r eval=FALSE}
+# Initialize a column of the appropriate length
+dframe$pred.cv <- 0 
+
+# k is the number of folds
+# splitPlan is the cross validation plan
+
+for(i in 1:k) {
+  # Get the ith split
+  split <- splitPlan[[i]]
+
+  # Build a model on the training data 
+  # from this split 
+  # (lm, in this case)
+  model <- lm(fmla, data = dframe[split$train,])
+
+  # make predictions on the 
+  # application data from this split
+  dframe$pred.cv[split$app] <- predict(model, newdata = dframe[split$app,])
+}
+```
+
+```{r}
+rmse <- function(predcol, ycol) {
+  res = predcol-ycol
+  sqrt(mean(res^2))
+}
+```
+
+```{r}
+# splitPlan is in the workspace
+str(splitPlan)
+
+# Run the 3-fold cross validation plan from splitPlan
+k <- 3 # Number of folds
+mpg$pred.cv <- 0 
+for(i in 1:k) {
+  split <- splitPlan[[i]]
+  model <- lm(cty ~ hwy, data = mpg[split$train, ])
+  mpg$pred.cv[split$app] <- predict(model, newdata = mpg[split$app, ])
+}
+
+# Predict from a full model
+mpg$pred <- predict(lm(cty ~ hwy, data = mpg))
+
+# Get the rmse of the full model's predictions
+rmse(mpg$pred, mpg$cty)
+rmse(mpg$pred.cv, mpg$cty)
+```
+
+
+
+
+
+## Cross validation (Python)
+
+
+## Data scaling
+
+When a variable in a dataset is on a larger scale than other variables it may disproportionately influence the resulting distance calculated between the observations.
+
+We will leverage the scale() function which by default centers & scales the column features.
+
+The dataset variables are the following:
+ * Girth - tree diameter in inches
+ * Height - tree height in inches
+ 
+```{r}
+three_trees = data.frame(Girth = c(8.3, 8.6, 10.5), Height = c(840, 780, 864))
+three_trees
+dist_trees <- dist(three_trees)
+
+# Scale three trees & calculate the distance  
+scaled_three_trees <- scale(three_trees)
+dist_scaled_trees <- dist(scaled_three_trees)
+
+# Output the results of both Matrices
+print('Without Scaling')
+dist_trees
+
+print('With Scaling')
+dist_scaled_trees
+```
+
+
+## Distance for categorical data
+
+
