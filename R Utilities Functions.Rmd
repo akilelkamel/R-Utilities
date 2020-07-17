@@ -37,6 +37,7 @@ pivot_longer(
 ```
 
 
+
 ## pivot_longer() - Example 1
 ```{r echo=FALSE, message=FALSE}
 library(tidyverse)
@@ -49,6 +50,7 @@ relig_income
 ```
 
 
+
 ## pivot_longer() - Example 1
 
 ```{r message=FALSE}
@@ -56,13 +58,6 @@ relig_income %>%
   pivot_longer(-religion, names_to = "income", values_to = "count")
 ```
 
-## pivot_longer() - Example 2
-
-```{r}
-# Slightly more complex case where columns have common prefix,
-# and missing missings are structural so should be dropped.
-billboard
-```
 
 ## pivot_longer() - Example 2
 
@@ -71,6 +66,16 @@ billboard
 # and missing missings are structural so should be dropped.
 billboard
 ```
+
+
+## pivot_longer() - Example 2
+
+```{r}
+# Slightly more complex case where columns have common prefix,
+# and missing missings are structural so should be dropped.
+billboard
+```
+
 
 ## pivot_longer() - Example 2
 
@@ -84,6 +89,8 @@ billboard %>%
    values_drop_na = TRUE
  )
 ```
+
+
 
 
 ## pivot_longer() - Example 3
@@ -124,6 +131,7 @@ anscombe %>%
 
 
 
+
 ## accumulate()
 
 Accumulate allows you to incrementally build something. One example is that we could use accumulate() to return cumulative sums. After we do a simple summation example we'll use the accumulate function to build multiple models and to give us the AIC for each of those models.
@@ -159,6 +167,7 @@ models %>%
 ```
 
 
+
 ## Train test split (R) - method 1
 
 We will split the **mpg** dataset into a training set mpg_train (75% of the data) and a test set mpg_test (25% of the data). One way to do this is to generate a column of uniform random numbers between 0 and 1, using the function runif().
@@ -169,7 +178,7 @@ If we have a data set dframe of size $N$, and we want a random subset of approxi
 2. dframe[gp < X,] will be about the right size.
 3. dframe[gp >= X,] will be the complement.
 
-## Train test split (R) - method 1
+
 ```{r}
 # Use nrow to get the number of rows in mpg (N) and print it
 (N <- nrow(mpg))
@@ -211,6 +220,59 @@ dim(X_test)
 length(y_test)
 ```
 
+## Train test split (R) - method 3
+
+ * Using **caret** package.
+ 
+ 
+```{r}
+# Read the data
+library(readr)
+breast_cancer_data <- read_csv("data/breast_cancer_data.csv")
+
+# Load caret and set seed
+library(caret)
+set.seed(42)
+# Create partition index
+index <- createDataPartition(breast_cancer_data$diagnosis, p = .70,
+list = FALSE)
+# Subset `breast_cancer_data` with index
+bc_train_data <- breast_cancer_data[index, ]
+bc_test_data <- breast_cancer_data[-index, ]
+
+dim(bc_train_data)
+dim(bc_test_data)
+```
+
+
+## Train test split (R) - h2o
+
+```{r}
+library(h2o)
+h2o.init()
+
+# Import the prostate dataset
+prostate.hex <- h2o.importFile(path = "https://raw.github.com/h2oai/h2o/master/smalldata/logreg/prostate.csv", destination_frame = "prostate.hex")
+
+# Split dataset giving the training dataset 75% of the data
+prostate.split <- h2o.splitFrame(data=prostate.hex, ratios=0.75)
+
+# Create a training set from the 1st dataset in the split
+prostate.train <- prostate.split[[1]]
+
+# Create a testing set from the 2nd dataset in the split
+prostate.test <- prostate.split[[2]]
+
+# Generate a GLM model using the training dataset. x represesnts the predictor column, and y represents the target index.
+prostate.glm <- h2o.glm(y = "CAPSULE", x = c("AGE", "RACE", "PSA", "DCAPS"), training_frame=prostate.train, family="binomial", nfolds=10, alpha=0.5)
+
+# Predict using the GLM model and the testing dataset
+pred = h2o.predict(object=prostate.glm, newdata=prostate.test)
+
+# View a summary of the prediction with a probability of TRUE
+summary(pred$p1, exact_quantiles=TRUE)
+```
+
 
 ## Train test split (Python)
 
@@ -238,7 +300,7 @@ train_test_split(y, shuffle=False)
 
 
 
-## Cross validation (R)
+## Cross validation (R) - vtreat
 
 There are several ways to implement an n-fold cross validation plan. In this example we will create such a plan using vtreat::kWayCrossValidation().
 
@@ -258,8 +320,6 @@ The resulting splitPlan is a list of nSplits elements; each element contains two
  * app: the indices of dframe that will form the test (or application) set In this exercise you will create a 3-fold cross-validation plan for the data set mpg.
 
 
-## Cross validation (R)
-
 ```{r}
 # Load the package vtreat
 library(vtreat)
@@ -273,7 +333,6 @@ splitPlan <- kWayCrossValidation(nRows, 3, NULL, NULL)
 str(splitPlan)
 ```
 
-## Cross validation (R)
 
 **Evaluate a modeling procedure using n-fold cross-validation**
 
@@ -310,6 +369,7 @@ rmse <- function(predcol, ycol) {
 }
 ```
 
+
 ```{r}
 # splitPlan is in the workspace
 str(splitPlan)
@@ -333,9 +393,115 @@ rmse(mpg$pred.cv, mpg$cty)
 
 
 
+## Cross validation (R) - caret
+
+
+```{r}
+library(caret)
+library(tictoc) # for claculating the run time
+# Repeated CV.
+fitControl <- trainControl(method = "repeatedcv",
+                           number = 3,
+                           repeats = 5)
+
+
+tic()
+set.seed(42)
+rf_model <- train(diagnosis ~ .,
+                  data = bc_train_data,
+                  method = "rf",
+                  trControl = fitControl,
+                  verbose = FALSE)
+toc()
+rf_model
+```
+
+## Cross validation (R) - mlr
+???
+```{r}
+
+```
 
 
 ## Cross validation (Python)
+
+<https://scikit-learn.org/stable/modules/cross_validation.html>
+
+![](img/grid_search_cross_validation.png)
+
+
+```{python}
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn import datasets
+from sklearn import svm
+
+X, y = datasets.load_iris(return_X_y=True)
+X.shape, y.shape
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.4, random_state=0)
+
+X_train.shape, y_train.shape
+
+X_test.shape, y_test.shape
+
+
+clf = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
+clf.score(X_test, y_test)
+```
+
+```{python}
+from sklearn.model_selection import cross_val_score
+clf = svm.SVC(kernel='linear', C=1)
+scores = cross_val_score(clf, X, y, cv=5)
+scores
+print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+```
+
+
+```{python}
+from sklearn import metrics
+scores = cross_val_score(
+    clf, X, y, cv=5, scoring='f1_macro')
+scores
+
+```
+
+
+```{python}
+from sklearn.model_selection import ShuffleSplit
+n_samples = X.shape[0]
+cv = ShuffleSplit(n_splits=5, test_size=0.3, random_state=0)
+cross_val_score(clf, X, y, cv=cv)
+```
+
+## Visualizing missing values
+
+
+```{r}
+head(airquality)
+# Count missing vals in entire dataset
+sum(is.na(airquality))
+library(visdat)
+vis_miss(airquality)
+```
+
+## Investigating missingness
+
+```{r}
+airquality %>%
+  mutate(miss_ozone = is.na(Ozone)) %>%
+  group_by(miss_ozone) %>%
+  summarize_all(median, na.rm = TRUE)
+```
+
+
+```{r}
+airquality %>%
+  arrange(Temp) %>%
+  vis_miss()
+```
 
 
 ## Data scaling
@@ -366,6 +532,425 @@ dist_scaled_trees
 ```
 
 
+
+
 ## Distance for categorical data
+???
+
+## Linear regression evaluation
+
+### R-Squred
+
+```{r}
+library(fst)
+taiwan_real_estate <- read_fst("data/taiwan_real_estate.fst")
+head(taiwan_real_estate)
+```
+
+Here we fil a linear regression model for predicting price_twd_msq based on n_convenience usning taiwan_real_estate dataset.
+```{r}
+lm_model <- lm(formula = price_twd_msq ~ n_convenience, data = taiwan_real_estate)
+```
+
+The summary of the linear regression model:
+
+it shows the r-squred value: ("Multiple R-Squared")
+
+```{r}
+summary(lm_model)
+```
+
+
+```{r}
+library(broom)
+library(dplyr)
+lm_model %>%
+	glance()
+```
+
+
+```{r}
+lm_model %>%
+	glance() %>%
+	pull(r.squared)
+```
+
+It's just correlation squared
+
+```{r}
+taiwan_real_estate %>%
+  summarize(
+    coeff_determination = cor(price_twd_msq, n_convenience) ^ 2
+  )
+```
+
+### Residual standard error (RSE)
+
+a "typical" difference between a prediction and an observed response
+It has the same unit as the response variable.
+
+
+The summary of the linear regression model:
+
+it shows the Residual standard error (RSE) value: "Residual standard error"
+
+```{r}
+summary(lm_model)
+```
+
+
+
+```{r}
+library(broom)
+library(dplyr)
+lm_model %>%
+	glance()
+```
+
+
+```{r}
+lm_model %>%
+	glance() %>%
+	pull(sigma)
+```
+
+Calculating RSE: residuals squared
+
+```{r}
+taiwan_real_estate %>%
+  mutate(
+    residuals_sq = residuals(lm_model) ^ 2
+  )
+```
+
+Calculating RSE: sum of residuals squared
+
+```{r}
+taiwan_real_estate %>%
+  mutate(
+    residuals_sq = residuals(lm_model) ^ 2
+  ) %>%
+  summarize(
+    resid_sum_of_sq = sum(residuals_sq)
+  )
+```
+
+
+Calculating RSE: degrees of freedom
+Degrees of freedom equals the number of observations minus the number of model coef
+
+```{r}
+taiwan_real_estate %>%
+  mutate(
+    residuals_sq = residuals(lm_model) ^ 2
+  ) %>%
+  summarize(
+    resid_sum_of_sq = sum(residuals_sq),
+    deg_freedom = n() - 2
+  )
+```
+
+Calculating RSE: square root of ratio
+
+```{r}
+taiwan_real_estate %>%
+  mutate(
+    residuals_sq = residuals(lm_model) ^ 2
+  ) %>%
+  summarize(
+    resid_sum_of_sq = sum(residuals_sq),
+    deg_freedom = n() - 2,
+    rse = sqrt(resid_sum_of_sq / deg_freedom)
+  )
+```
+
+
+
+Interpreting RSE
+
+lm_model has an RSE of 3.38.
+
+The difference between predicted bream prices and observed prices is typically about 3.38.
+
+
+
+
+**Residual standard error**
+
+```{r}
+taiwan_real_estate %>%
+  mutate(
+    residuals_sq = residuals(lm_model) ^ 2
+  ) %>%
+  summarize(
+    resid_sum_of_sq = sum(residuals_sq),
+    deg_freedom = n() - 2,
+    rse = sqrt(resid_sum_of_sq / deg_freedom)
+  )
+```
+
+**Root-mean-square error**
+
+```{r}
+taiwan_real_estate %>%
+  mutate(
+    residuals_sq = residuals(lm_model) ^ 2
+  ) %>%
+  summarize(
+    resid_sum_of_sq = sum(residuals_sq),
+    n_obs = n(),
+    rmse = sqrt(resid_sum_of_sq / n_obs)
+  )
+```
+
+
+
+
+
+
+## fct_collapse
+
+Collapse factor levels into manually defined groups
+
+
+The wine data, shown below, contains information about various wines stocked by an online retailer. All appropriate variables are already stored as categorical variables, however you have now decided that it would improve your analysis if wine types were encoded as:
+
+ * white: white and sparkling
+ * red: red
+
+```{r}
+wine <- data.frame(
+    id = c(21, 95, 69, 31, 76),
+    style = as.factor(c("gavi", "blanc de blanc", "riesling", "alvarinho", "valpolicella")),
+    type = as.factor(c("white", "sparkling", "white", "white", "red")),
+    country = as.factor(c("italy", "france", "germany", "portugal", "italy")),
+    price = c(13.6, NA, 17.0, 19.0, 19.4),
+    rating = c(NA, 3.8, 4, 4.2, 4.2)
+)
+wine
+```
+
+
+```{r}
+library(tidyverse)
+library(forcats)
+wine
+
+wine %>%
+  mutate(type = fct_collapse(type, 
+                "red" = "red", 
+                "white" = c("white", "sparkling")))
+
+wine %>%
+    count(type)
+wine %>%
+  mutate(type = fct_collapse(type, 
+                "red" = "red", 
+                "white" = c("white", "sparkling"))) %>%
+  count(type)
+```
+
+
+## Spread
+
+Spread A Key-Value Pair Across Multiple Columns.
+
+Restructure the following data, df, so that there is one column for each year.
+
+```{r}
+df <- data.frame(
+    country = c("Afghanistan", "Albania", "Algeria", "Afghanistan", "Albania", "Algeria"),
+    year = c("Y1980", "Y1980", "Y1980", "Y1981", "Y1981", "Y1981"),
+    bmi = c(21.48678, 25.22533, 22.25703, 21.46552, 25.23981, 22.34745)
+)
+
+df
+```
+
+```{r}
+spread(df, year, bmi)
+```
+
+
+## Gather
+
+Gather Columns Into Key-Value Pairs.
+
+Change the structure of the data df, shown below, so that there is a column to represent the year and a column to represent the bmi values.
+
+```{r}
+df2 <- spread(df, year, bmi)
+df2
+```
+
+```{r}
+gather(df2, year, bmi, -country)
+```
+
+
+## Data visualization withh ggplot2
+
+### The penguins data from palmerpenguins packages
+
+We’ll be using the penguins data from the palmerpenguins package. You can read about the variables in the data frame [here](https://allisonhorst.github.io/palmerpenguins/reference/penguins.html) and a quick peek is provided below.
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+```
+
+
+```{r}
+glimpse(penguins)
+```
+
+### Making a single box
+
+```{r}
+ggplot(penguins, aes(y = body_mass_g)) +
+  geom_boxplot()
+```
+
+
+### No more coord_flip() 
+
+Horizontal bar plots can be really useful, especially for categorical data whose levels have long names that overlap if placed on the x-axis. Previously, making horizontal bar plots required mapping the variable to be plotted to the x aesthetic and then applying a coord_flip() layer to flip the axes, e.g.
+
+```{r}
+ggplot(penguins, aes(x = species)) +
+  geom_bar() +
+  coord_flip()
+```
+
+geom_bar() now works in both directions, so the categorical variable can be directly mapped to the y aesthetic to achieve the horizontal box plot.
+
+```{r}
+ggplot(penguins, aes(y = species)) +
+  geom_bar()
+```
+
+
+
+### Leverage scales and forcats 
+
+One of the biggest strengths of ggplot2 is that it has fantastic defaults and your plots look pretty good without trying hard. This is very attractive especially for teaching introductory audiences when you just want to focus on the basics. However, when teaching data visualisation (even in the simplest sense) it is important to discuss data visualisation good practices, e.g. present data in ascending/descending order, label axes in a way that matches your narrative, etc. Packages like [scales](http://scales.r-lib.org/) and [forcats](https://forcats.tidyverse.org/) are incredibly helpful for implementing these small but impactful improvements to visualisations.
+
+Suppose we want to plot the percentage distribution of different species of penguins. We can first calculate these percentages in a dplyr pipeline.
+
+```{r}
+penguins %>%
+  count(species) %>%
+  mutate(prop = n / sum(n))
+```
+
+
+We can then feed the result to the ggplot() function to be represented using geom_col().
+
+```{r}
+penguins %>%
+  count(species) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = prop, y = species)) +
+  geom_col()
+```
+
+
+First, let’s reorder the bars in descending order, with the penguin species with the highest proportion on top. We use fct_reorder() function from the forcats package for this. We can read fct_reorder(species, prop) as “reorder the levels of species based on the values of prop”.
+
+```{r}
+penguins %>%
+  count(species) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = prop, y = fct_reorder(species, prop))) +
+  geom_col()
+```
+
+The forcats package contains a variety of functions starting with the prefix fct_ that operate on factor levels. Perhaps unsurprisingly, they’re named pretty intuitively (at least for English speakers). (Side note: After fct_reorder(), my favourite function for improving visualisations of messy survey data with factors with many levels is fct_lump().)
+
+Next, let’s think about how we would interpret this visualisation. I would probably say something like “Adelie penguins make up over 40% of the sample, followed by Gentoo penguins at roughly over 35%, and Chinstrap penguins make up the remaining 20%". But the x-axis is showing proportions instead of percentages.
+
+The scales package offers a variety of functions, starting with the prefix label_* that help with this sort of task.
+
+```{r}
+library(scales)
+```
+
+
+The function we want here is label_percent(). We can also specify the number of decimal places to show with the accuracy argument.
+
+```{r}
+penguins %>%
+  count(species) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = prop, y = fct_reorder(species, prop))) +
+  geom_col() +
+  scale_x_continuous(labels = label_percent(accuracy = 1))
+```
+
+
+
+And finally, let’s fix up the axis labels.
+
+```{r}
+penguins %>%
+  count(species) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(aes(x = prop, y = fct_reorder(species, prop))) +
+  geom_col() +
+  scale_x_continuous(labels = label_percent(accuracy = 1)) +
+  labs(
+    x = "Percentage",
+    y = "Species",
+    title = "Species distribution of penguins",
+    subtitle = "Adelie, Gentoo, and Chinstrap Penguins at Palmer Station LTER",
+    caption = "Source: allisonhorst.github.io/palmerpenguins"
+  )
+```
+
+## tidyverse
+
+*The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures.* [Source](https://tidyverse.org/)
+
+If you’re a tidyverse user and/or an avid reader of this blog, you probably already know this. But how about your students? Do these words mean anything to your students the first time they hear them? How do you introduce your students to the tidyverse, especially if they are also new to R?
+
+Start with the core packages 
+Start with the core packages, by briefly stating the primary purpose of each, in the order that students will encounter them in your course, e.g.
+
+ * **ggplot2**: data visualisation
+ * **dplyr**: data wrangling
+ * **readr**: reading data
+ * **tibble**: modern data frames
+ * **stringr**: string manipulation
+ * **forcats**: dealing with factors
+ * **tidyr**: data tidying
+ * **purrr**: functional programming
+
+This is the order I recommend and the order that follows the curriculum outlined in Data Science in a Box. Start with visualisation (ggplot2) and delay introducing functional programming (purrr) until later. (More on why and how to delay introducing purrr in the last post in the series!)
+
+I like introducing the tidyverse with a visual showcasing the pretty hex logos. I cannot say that this necessarily adds to student learning, but it sure draws students in!
+
+![](img/tidyverse-packages.png)
+
+Figure: Hex logos for the eight core tidyverse packages and their primary purposes.
+
+The important thing to note here is that I don’t recommend bringing up the non-core packages, i.e. those installed with the tidyverse, but not loaded along with it. Regardless of the level at which you’re teaching, chances are you won’t be using all of those packages in a single course. I recommend introducing other packages used in your course (whether they are a part of the tidyverse or not) as they become relevant to the topic you’re covering, and simply highlight that the packages from the wider tidyverse share the design philosophy, grammar, and data structures as the core packages, e.g. the rvest package for web scraping plays nicely with pipes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
